@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>A Birthday Surprise</title>
+  <style>
+    :root {
+      --pink: #ff5d8f;
+      --rose: #ff8fab;
+      --soft: #fff0f5;
+      --cream: #fffaf7;
+      --plum: #5a294f;
+      --text: #3f2438;
+      --card: rgba(255, 255, 255, 0.82);
+      --shadow: 0 18px 50px rgba(90, 41, 79, 0.15);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      overflow-x: hidden;
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 10% 15%, rgba(255, 143, 171, 0.25), transparent 24rem),
+        radial-gradient(circle at 90% 8%, rgba(255, 93, 143, 0.20), transparent 22rem),
+        linear-gradient(145deg, var(--cream), var(--soft));
+    }
+
+    button {
+      font: inherit;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .screen {
+      min-height: 100vh;
+      width: 100%;
+    }
+
+    #intro {
+      position: relative;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      overflow: hidden;
+    }
+
+    .intro-card {
+      width: min(620px, 100%);
+      padding: 42px 28px;
+      text-align: center;
+      border: 1px solid rgba(255,255,255,0.75);
+      border-radius: 32px;
+      background: rgba(255,255,255,0.68);
+      backdrop-filter: blur(14px);
+      box-shadow: var(--shadow);
+      animation: rise 0.9s ease both;
+    }
+
+    .eyebrow {
+      margin: 0 0 12px;
+      color: var(--pink);
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    h1, h2, h3, p {
+      margin-top: 0;
+    }
+
+    h1 {
+      margin-bottom: 14px;
+      color: var(--plum);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(2.7rem, 8vw, 5.6rem);
+      line-height: 0.98;
+      letter-spacing: -0.04em;
+    }
+
+    .intro-text {
+      max-width: 480px;
+      margin: 0 auto 26px;
+      font-size: 1.06rem;
+      line-height: 1.7;
+    }
+
+    .primary-button,
+    .secondary-button,
+    .choice-button {
+      border: 0;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+    }
+
+    .primary-button {
+      padding: 14px 24px;
+      color: white;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--pink), var(--rose));
+      box-shadow: 0 12px 26px rgba(255, 93, 143, 0.28);
+    }
+
+    .secondary-button {
+      padding: 12px 20px;
+      color: var(--plum);
+      font-weight: 750;
+      background: rgba(255,255,255,0.9);
+      border: 1px solid rgba(90, 41, 79, 0.12);
+    }
+
+    .primary-button:hover,
+    .secondary-button:hover,
+    .choice-button:hover {
+      transform: translateY(-2px);
+    }
+
+    .primary-button:active,
+    .secondary-button:active,
+    .choice-button:active {
+      transform: translateY(0);
+    }
+
+    .envelope {
+      position: relative;
+      width: 150px;
+      height: 104px;
+      margin: 0 auto 28px;
+      border-radius: 10px;
+      background: #ffd3df;
+      box-shadow: 0 14px 32px rgba(90, 41, 79, 0.14);
+      animation: float 2.8s ease-in-out infinite;
+    }
+
+    .envelope::before,
+    .envelope::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 10px;
+    }
+
+    .envelope::before {
+      clip-path: polygon(0 0, 50% 58%, 100% 0);
+      background: #ffb7ca;
+    }
+
+    .envelope::after {
+      clip-path: polygon(0 100%, 48% 46%, 100% 100%);
+      background: #ffc6d5;
+    }
+
+    .seal {
+      position: absolute;
+      z-index: 2;
+      left: 50%;
+      top: 54%;
+      display: grid;
+      width: 44px;
+      height: 44px;
+      place-items: center;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      font-size: 1.35rem;
+      background: var(--pink);
+      box-shadow: 0 7px 14px rgba(255, 93, 143, 0.28);
+    }
+
+    .floating-heart {
+      position: absolute;
+      bottom: -40px;
+      color: rgba(255, 93, 143, 0.35);
+      pointer-events: none;
+      animation: driftUp linear infinite;
+    }
+
+    #experience {
+      padding: 28px 18px 76px;
+    }
+
+    .topbar {
+      position: sticky;
+      z-index: 10;
+      top: 12px;
+      display: flex;
+      justify-content: center;
+      margin-bottom: 34px;
+    }
+
+    .topbar-inner {
+      display: flex;
+      width: min(900px, 100%);
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 12px 10px 16px;
+      border: 1px solid rgba(255,255,255,0.82);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.74);
+      backdrop-filter: blur(16px);
+      box-shadow: 0 12px 36px rgba(90, 41, 79, 0.10);
+    }
+
+    .brand {
+      color: var(--plum);
+      font-family: Georgia, "Times New Roman", serif;
+      font-weight: 800;
+    }
+
+    .progress {
+      display: flex;
+      gap: 6px;
+    }
+
+    .progress-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(90, 41, 79, 0.14);
+      transition: width 0.2s ease, background 0.2s ease;
+    }
+
+    .progress-dot.active {
+      width: 28px;
+      background: var(--pink);
+    }
+
+    .chapter {
+      width: min(960px, 100%);
+      min-height: 72vh;
+      margin: 0 auto 70px;
+      scroll-margin-top: 95px;
+    }
+
+    .section-heading {
+      max-width: 720px;
+      margin-bottom: 24px;
+    }
+
+    .section-heading h2 {
+      margin-bottom: 10px;
+      color: var(--plum);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      letter-spacing: -0.03em;
+    }
+
+    .section-heading p {
+      line-height: 1.7;
+      color: #65435c;
+    }
+
+    .memory-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .memory-card {
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.82);
+      border-radius: 26px;
+      background: var(--card);
+      box-shadow: var(--shadow);
+      transform: translateY(12px);
+      opacity: 0;
+      transition: transform 0.5s ease, opacity 0.5s ease;
+    }
+
+    .memory-card.visible {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .memory-photo {
+      display: grid;
+      aspect-ratio: 16 / 10;
+      place-items: center;
+      overflow: hidden;
+      color: white;
+      font-size: 3.4rem;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(255,255,255,0.42), transparent 25%),
+        linear-gradient(135deg, #ff8fab, #f76f9e);
+    }
+
+    .memory-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .memory-content {
+      padding: 20px;
+    }
+
+    .memory-content h3 {
+      margin-bottom: 8px;
+      color: var(--plum);
+    }
+
+    .memory-content p {
+      margin-bottom: 0;
+      color: #65435c;
+      line-height: 1.65;
+    }
+
+    .reason-box,
+    .quiz-box,
+    .letter-card,
+    .final-card {
+      border: 1px solid rgba(255,255,255,0.82);
+      border-radius: 30px;
+      background: var(--card);
+      box-shadow: var(--shadow);
+    }
+
+    .reason-box {
+      display: grid;
+      min-height: 330px;
+      place-items: center;
+      padding: 36px 24px;
+      text-align: center;
+    }
+
+    .reason-number {
+      margin-bottom: 12px;
+      color: var(--pink);
+      font-size: 0.88rem;
+      font-weight: 850;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .reason-text {
+      max-width: 680px;
+      margin-bottom: 26px;
+      color: var(--plum);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(1.8rem, 5vw, 3rem);
+      line-height: 1.25;
+    }
+
+    .quiz-box {
+      padding: 30px;
+    }
+
+    .quiz-question {
+      margin-bottom: 22px;
+      color: var(--plum);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(1.55rem, 4vw, 2.5rem);
+    }
+
+    .choices {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .choice-button {
+      padding: 16px;
+      color: var(--plum);
+      font-weight: 800;
+      background: rgba(255,255,255,0.9);
+      border: 1px solid rgba(90, 41, 79, 0.12);
+    }
+
+    .quiz-result {
+      min-height: 40px;
+      margin: 20px 0 0;
+      color: var(--pink);
+      font-weight: 800;
+      line-height: 1.5;
+    }
+
+    .letter-card {
+      position: relative;
+      overflow: hidden;
+      padding: clamp(28px, 6vw, 58px);
+    }
+
+    .letter-card::before {
+      content: "♥";
+      position: absolute;
+      right: -20px;
+      top: -38px;
+      color: rgba(255, 93, 143, 0.08);
+      font-size: 14rem;
+      line-height: 1;
+    }
+
+    .letter-card p {
+      position: relative;
+      max-width: 760px;
+      margin-bottom: 18px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(1.1rem, 2.5vw, 1.35rem);
+      line-height: 1.9;
+    }
+
+    .signature {
+      margin-top: 28px;
+      color: var(--pink);
+      font-size: 1.3rem;
+      font-weight: 800;
+    }
+
+    .final-card {
+      padding: 48px 24px;
+      text-align: center;
+    }
+
+    .gift {
+      display: grid;
+      width: 140px;
+      height: 140px;
+      margin: 4px auto 24px;
+      place-items: center;
+      border-radius: 30px;
+      color: white;
+      font-size: 4.6rem;
+      background: linear-gradient(145deg, var(--pink), var(--rose));
+      box-shadow: 0 18px 40px rgba(255, 93, 143, 0.25);
+      transform-origin: bottom;
+      animation: giftWiggle 2.4s ease-in-out infinite;
+    }
+
+    .final-card h2 {
+      margin-bottom: 12px;
+      color: var(--plum);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(2rem, 5vw, 3.6rem);
+    }
+
+    .final-card p {
+      max-width: 610px;
+      margin: 0 auto 24px;
+      color: #65435c;
+      line-height: 1.7;
+    }
+
+    .confetti {
+      position: fixed;
+      z-index: 999;
+      top: -20px;
+      width: 10px;
+      height: 16px;
+      border-radius: 3px;
+      pointer-events: none;
+      animation: confettiFall linear forwards;
+    }
+
+    .mini-note {
+      margin-top: 18px;
+      color: #795c72;
+      font-size: 0.88rem;
+    }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(18px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0) rotate(-1deg); }
+      50% { transform: translateY(-10px) rotate(1deg); }
+    }
+
+    @keyframes driftUp {
+      from { transform: translateY(0) rotate(0deg); opacity: 0; }
+      12% { opacity: 1; }
+      to { transform: translateY(-115vh) rotate(220deg); opacity: 0; }
+    }
+
+    @keyframes giftWiggle {
+      0%, 86%, 100% { transform: rotate(0); }
+      90% { transform: rotate(-5deg); }
+      94% { transform: rotate(5deg); }
+      98% { transform: rotate(-2deg); }
+    }
+
+    @keyframes confettiFall {
+      to {
+        transform: translate3d(var(--x), 110vh, 0) rotate(720deg);
+        opacity: 0.95;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .memory-grid,
+      .choices {
+        grid-template-columns: 1fr;
+      }
+
+      .topbar-inner {
+        border-radius: 24px;
+      }
+
+      .brand {
+        max-width: 160px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .chapter {
+        min-height: auto;
+        margin-bottom: 54px;
+      }
+
+      .quiz-box {
+        padding: 22px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <section id="intro" class="screen" aria-label="Birthday surprise introduction">
+    <div id="heart-field" aria-hidden="true"></div>
+
+    <div class="intro-card">
+      <div class="envelope" aria-hidden="true">
+        <div class="seal">♥</div>
+      </div>
+      <p class="eyebrow">A tiny world made just for you</p>
+      <h1 id="intro-title">Happy Birthday, Shraya</h1>
+      <p id="intro-copy" class="intro-text">
+        This is YOUR birthday present!!!!!!!!!!
+      </p>
+      <button id="open-button" class="primary-button" type="button">
+        Open your surprise
+      </button>
+    </div>
+  </section>
+
+  <main id="experience" class="hidden">
+    <nav class="topbar" aria-label="Birthday surprise progress">
+      <div class="topbar-inner">
+        <div id="brand" class="brand">For You, Always</div>
+        <div class="progress" aria-hidden="true">
+          <span class="progress-dot active"></span>
+          <span class="progress-dot"></span>
+          <span class="progress-dot"></span>
+          <span class="progress-dot"></span>
+          <span class="progress-dot"></span>
+        </div>
+      </div>
+    </nav>
+
+    <section class="chapter" data-chapter="0">
+      <div class="section-heading">
+        <p class="eyebrow">Chapter One</p>
+        <h2>Some of my favorite little moments</h2>
+        <p>
+          Big memories are beautiful, but I love the tiny moments too. The laughs,
+          the random conversations, and every second that somehow feels better
+          just because you are there.
+        </p>
+      </div>
+      <div id="memory-grid" class="memory-grid"></div>
+    </section>
+
+    <section class="chapter" data-chapter="1">
+      <div class="section-heading">
+        <p class="eyebrow">Chapter Two</p>
+        <h2>A few reasons I love you</h2>
+        <p>Press the button whenever you want another reminder.</p>
+      </div>
+      <div class="reason-box">
+        <div>
+          <div id="reason-number" class="reason-number">Reason 1</div>
+          <div id="reason-text" class="reason-text"></div>
+          <button id="next-reason" class="primary-button" type="button">
+            Show me another
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="chapter" data-chapter="2">
+      <div class="section-heading">
+        <p class="eyebrow">Chapter Three</p>
+        <h2>A very serious question</h2>
+        <p>This may be the most important quiz you ever take.</p>
+      </div>
+      <div class="quiz-box">
+        <div class="quiz-question">How much do I love you?</div>
+        <div class="choices">
+          <button class="choice-button" data-answer="small" type="button">A normal amount</button>
+          <button class="choice-button" data-answer="huge" type="button">More than words can explain</button>
+          <button class="choice-button" data-answer="forever" type="button">Forever and then some</button>
+          <button class="choice-button" data-answer="trick" type="button">This is obviously a trick question</button>
+        </div>
+        <p id="quiz-result" class="quiz-result" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <section class="chapter" data-chapter="3">
+      <div class="section-heading">
+        <p class="eyebrow">Chapter Four</p>
+        <h2>A letter for you</h2>
+      </div>
+      <article class="letter-card">
+        <div id="letter-content"></div>
+        <div id="signature" class="signature"></div>
+      </article>
+    </section>
+
+    <section class="chapter" data-chapter="4">
+      <div class="final-card">
+        <div class="gift" aria-hidden="true">🎁</div>
+        <p class="eyebrow">One final thing</p>
+        <h2 id="final-heading">Happy Birthday, Beautiful</h2>
+        <p id="final-message">
+          Thank you for being you. I hope this year gives you back even a little
+          of the happiness you give me.
+        </p>
+        <button id="celebrate-button" class="primary-button" type="button">
+          Celebrate
+        </button>
+        <p class="mini-note">You can press this as many times as you want.</p>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    /*
+      PERSONALIZE ONLY THIS SECTION
+
+      Photo files should be kept in the same folder as this HTML file.
+      Examples: photo1.jpg, photo2.png, us-at-the-beach.jpeg
+    */
+    const CONFIG = {
+      herName: "Shraya",
+      yourName: "Niyant",
+
+      introMessage:
+        "This is YOUR birthday present!!!!!!!!!!!",
+
+      memories: [
+        {
+          title: "The moment I knew you were special",
+          text: "Write a short memory here about an early moment that made you realize how special she was.",
+          photo: "",
+          emoji: "✨"
+        },
+        {
+          title: "My favorite day with you",
+          text: "Describe one day together that you keep replaying in your head because it made you so happy.",
+          photo: "",
+          emoji: "📸"
+        },
+        {
+          title: "The way you smile is so cute",
+          text: "I LOVE our late night calls. I look forward to them every single day!",
+          photo: "lp_image.jpeg",
+          emoji: "🥰"
+        },
+        {
+          title: "Everything still ahead of us",
+          text: "Write something sweet about the memories, trips, calls, dates, and ordinary days you still want together.",
+          photo: "",
+          emoji: "🌙"
+        }
+      ],
+
+      reasons: [
+        "You make normal days feel special just by being there.",
+        "Your smile can change my entire mood in one second.",
+        "I love how safe, happy, and understood I feel with you.",
+        "You are beautiful in every way, even in the moments when you do not see it.",
+        "I love the way we can be sweet, weird, serious, and completely ourselves together.",
+        "You make me want to be better, dream bigger, and love harder.",
+        "No matter where life takes us, I will always be grateful that I found you."
+      ],
+
+      letterParagraphs: [
+        "Happy birthday, beautiful. I hope today reminds you how deeply loved you are, not only by everyone around you, but especially by me.",
+        "You have brought so much happiness, comfort, excitement, and love into my life. Even the smallest moments with you mean more to me than I know how to explain.",
+        "I want you to know that I will always be here for you. I will protect your heart, support your dreams, celebrate every win with you, and stay beside you when life feels difficult.",
+        "I am so proud of the person you are, and I feel incredibly lucky that I get to love you. I cannot wait for every memory we still have left to make.",
+        "Today is about you, but loving you is one of the greatest gifts life has ever given me."
+      ],
+
+      finalMessage:
+        "Thank you for being you. I hope this year gives you back even a little of the happiness you give me."
+    };
+
+    const intro = document.getElementById("intro");
+    const experience = document.getElementById("experience");
+    const openButton = document.getElementById("open-button");
+    const memoryGrid = document.getElementById("memory-grid");
+    const reasonText = document.getElementById("reason-text");
+    const reasonNumber = document.getElementById("reason-number");
+    const nextReasonButton = document.getElementById("next-reason");
+    const quizResult = document.getElementById("quiz-result");
+    const celebrateButton = document.getElementById("celebrate-button");
+    const progressDots = [...document.querySelectorAll(".progress-dot")];
+    const chapters = [...document.querySelectorAll(".chapter")];
+
+    let reasonIndex = 0;
+
+    document.title = `Happy Birthday ${CONFIG.herName}`;
+    document.getElementById("intro-title").textContent = `Happy Birthday, ${CONFIG.herName}`;
+    document.getElementById("intro-copy").textContent = CONFIG.introMessage;
+    document.getElementById("brand").textContent = `For ${CONFIG.herName}, Always`;
+    document.getElementById("final-heading").textContent = `Happy Birthday, ${CONFIG.herName}`;
+    document.getElementById("final-message").textContent = CONFIG.finalMessage;
+    document.getElementById("signature").textContent = `Always yours, ${CONFIG.yourName}`;
+
+    CONFIG.memories.forEach((memory, index) => {
+      const card = document.createElement("article");
+      card.className = "memory-card";
+
+      const visual = document.createElement("div");
+      visual.className = "memory-photo";
+
+      if (memory.photo) {
+        const image = document.createElement("img");
+        image.src = memory.photo;
+        image.alt = memory.title;
+        image.addEventListener("error", () => {
+          visual.innerHTML = "";
+          visual.textContent = memory.emoji || "♥";
+        });
+        visual.appendChild(image);
+      } else {
+        visual.textContent = memory.emoji || "♥";
+      }
+
+      const content = document.createElement("div");
+      content.className = "memory-content";
+
+      const title = document.createElement("h3");
+      title.textContent = memory.title;
+
+      const text = document.createElement("p");
+      text.textContent = memory.text;
+
+      content.append(title, text);
+      card.append(visual, content);
+      memoryGrid.appendChild(card);
+
+      setTimeout(() => card.classList.add("visible"), 160 * index);
+    });
+
+    function showReason() {
+      reasonNumber.textContent = `Reason ${reasonIndex + 1} of ${CONFIG.reasons.length}`;
+      reasonText.textContent = CONFIG.reasons[reasonIndex];
+    }
+
+    showReason();
+
+    nextReasonButton.addEventListener("click", () => {
+      reasonIndex = (reasonIndex + 1) % CONFIG.reasons.length;
+      reasonText.animate(
+        [
+          { opacity: 0, transform: "translateY(8px)" },
+          { opacity: 1, transform: "translateY(0)" }
+        ],
+        { duration: 360, easing: "ease" }
+      );
+      showReason();
+    });
+
+    document.querySelectorAll(".choice-button").forEach((button) => {
+      button.addEventListener("click", () => {
+        const answer = button.dataset.answer;
+        const messages = {
+          small: "Nice try. That answer is way too small.",
+          huge: "Correct, but somehow it is still even more than that.",
+          forever: "Correct. Forever, and then whatever comes after forever.",
+          trick: "Exactly. There was never a number big enough."
+        };
+        quizResult.textContent = messages[answer];
+        tinyConfetti(22);
+      });
+    });
+
+    const letterContent = document.getElementById("letter-content");
+    CONFIG.letterParagraphs.forEach((paragraph) => {
+      const p = document.createElement("p");
+      p.textContent = paragraph;
+      letterContent.appendChild(p);
+    });
+
+    openButton.addEventListener("click", () => {
+      intro.animate(
+        [
+          { opacity: 1, transform: "scale(1)" },
+          { opacity: 0, transform: "scale(1.025)" }
+        ],
+        { duration: 520, easing: "ease", fill: "forwards" }
+      ).finished.then(() => {
+        intro.classList.add("hidden");
+        experience.classList.remove("hidden");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        tinyConfetti(44);
+      });
+    });
+
+    celebrateButton.addEventListener("click", () => {
+      tinyConfetti(120);
+      celebrateButton.textContent = "I love you ♥";
+      setTimeout(() => {
+        celebrateButton.textContent = "Celebrate again";
+      }, 1800);
+    });
+
+    function tinyConfetti(amount) {
+      const colors = ["#ff5d8f", "#ff8fab", "#ffd3df", "#fff0f5", "#8f4b78"];
+
+      for (let i = 0; i < amount; i += 1) {
+        const piece = document.createElement("span");
+        piece.className = "confetti";
+        piece.style.left = `${Math.random() * 100}vw`;
+        piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+        piece.style.setProperty("--x", `${(Math.random() - 0.5) * 240}px`);
+        piece.style.animationDuration = `${1.8 + Math.random() * 2.2}s`;
+        piece.style.animationDelay = `${Math.random() * 0.35}s`;
+        document.body.appendChild(piece);
+        setTimeout(() => piece.remove(), 4500);
+      }
+    }
+
+    function createFloatingHearts() {
+      const field = document.getElementById("heart-field");
+
+      for (let i = 0; i < 18; i += 1) {
+        const heart = document.createElement("span");
+        heart.className = "floating-heart";
+        heart.textContent = Math.random() > 0.35 ? "♥" : "♡";
+        heart.style.left = `${Math.random() * 100}%`;
+        heart.style.fontSize = `${14 + Math.random() * 24}px`;
+        heart.style.animationDuration = `${7 + Math.random() * 8}s`;
+        heart.style.animationDelay = `${Math.random() * 8}s`;
+        field.appendChild(heart);
+      }
+    }
+
+    createFloatingHearts();
+
+    const chapterObserver = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+
+        if (!visible) return;
+
+        const index = Number(visible.target.dataset.chapter);
+        progressDots.forEach((dot, dotIndex) => {
+          dot.classList.toggle("active", dotIndex === index);
+        });
+      },
+      { threshold: [0.25, 0.5, 0.75] }
+    );
+
+    chapters.forEach((chapter) => chapterObserver.observe(chapter));
+  </script>
+</body>
+</html>
